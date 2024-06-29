@@ -491,6 +491,18 @@ class AnomalyDetector(ABC):
         # Returns the anomaly score for the instance. A high score is indicative of a normal instance.
         pass
 
+    @abstractmethod
+    def train_batch(self, instances):
+        pass
+
+    @abstractmethod
+    def score_batch(self, instances):
+        pass
+
+    @abstractmethod
+    def predict_batch(self, instances):
+        pass
+
 
 class MOAAnomalyDetector(AnomalyDetector):
     def __init__(self, schema=None, CLI=None, random_seed=1, moa_learner=None):
@@ -526,8 +538,24 @@ class MOAAnomalyDetector(AnomalyDetector):
             self.moa_learner.getVotesForInstance(instance.java_instance)
         )
 
-    def score_instance(self, instance):
+    def score_instance(self, instance: Instance) -> AnomalyScore:
         # We assume that the anomaly score is the first element of the prediction array.
         # However, if it is not the case for a MOA learner, this method should be overridden.
         prediction_array = self.moa_learner.getVotesForInstance(instance.java_instance)
         return prediction_array[0]
+
+    def train_batch(self, instances):
+        for instance in instances:
+            self.train(instance)
+
+    def score_batch(self, instances):
+        scores = []
+        for instance in instances:
+            scores.append(self.score_instance(instance))
+        return scores
+
+    def predict_batch(self, instances):
+        predictions = []
+        for instance in instances:
+            predictions.append(self.predict(instance))
+        return predictions
