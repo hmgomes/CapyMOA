@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Literal, Optional, Union
 
 from capymoa.stream._stream import Schema
-from moa.streams import InstanceStream
+from moa.streams import InstanceStream as _InstanceStream
 
 from capymoa.stream import Stream, stream_from_file
 from capymoa.datasets._utils import (
@@ -69,7 +69,7 @@ class _DownloadableDataset(ABC):
 class _DownloadableARFF(_DownloadableDataset, Stream):
     schema: Schema
     stream: Stream
-    moa_stream: Optional[InstanceStream]
+    moa_stream: Optional[_InstanceStream]
     _target_type: Literal["numeric", "categorical"] | None = None
 
     def __init__(
@@ -107,7 +107,7 @@ class _DownloadableARFF(_DownloadableDataset, Stream):
     def get_schema(self) -> Schema:
         return self.schema
 
-    def get_moa_stream(self) -> Optional[InstanceStream]:
+    def get_moa_stream(self) -> Optional[_InstanceStream]:
         return self.moa_stream
 
     def restart(self):
